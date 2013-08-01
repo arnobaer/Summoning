@@ -1,8 +1,23 @@
-<?php error_reporting(E_ERROR |E_PARSE);
+<?php define ('SUMMONING', true);
 
-// Summoning HTML code generator.
-// Author: Bernhard Arnold <bernhard.arnold@burgried.at>
-// Report bugs or suggestions to the author above.
+/*
+ *  Summoning - HTML code generator
+ *  Copyright (C) 2012-2013  Bernhard Arnold <bernhard.arnold@cern.ch>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 class Summoning {
 	static public function a($href, $content) {
@@ -17,8 +32,10 @@ class Summoning {
 		return new SummoningHtmlElement('em', $content ? $content : '');
 	}
 	static public function h($level, $content) {
+		$minlevel = 1;
+		$maxlevel = 6;
 		$level = intval($level);
-		$level = $level <1 ? 1 : ($level > 6 ? 6 : $level);
+		$level = $level < $minlevel ? $minlevel : ($level > $maxlevel ? $maxlevel : $level);
 		return new SummoningHtmlElement("h{$level}", $content ? $content : '');
 	}
 	static public function p($content) {
@@ -192,7 +209,6 @@ class SummoningToolbox {
 		for ($i = 1; $i <= 31; ++$i) $days["{$i}"] = $i;
 		return $days;
 	}
-
 	static public function months($lang = 'de', $short = false) {
 		switch ($lang) {
 			case 'de':
@@ -208,6 +224,18 @@ class SummoningToolbox {
 					'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6,
 					'July' => 7, 'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12, );
 		} // switch
+	}
+	static public function get($key) {
+		return isset($_GET[$key]) ? filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING) : false;
+	}
+	static public function post($key) {
+		return isset($_POST[$key]) ? filter_input(INPUT_POST, $key, FILTER_SANITIZE_STRING) : false;
+	}
+	static public function cookie($key) {
+		return isset($_COOKIE[$key]) ? filter_input(INPUT_COOKIE, $key, FILTER_SANITIZE_STRING) : false;
+	}
+	static public function server($key) {
+		return isset($_SERVER[$key]) ? filter_input(INPUT_SERVER, $key, FILTER_SANITIZE_STRING) : false;
 	}
 }
 
