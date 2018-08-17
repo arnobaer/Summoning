@@ -1,7 +1,7 @@
 Summoning
 =========
 
-Yet another HTML code generator.
+Yet another HTML5 code generator.
 
 ## Example
 
