@@ -1,0 +1,20 @@
+{
+    "name": "arnobaer/Summoning",
+    "type": "library",
+    "description": "Yet another HTML5 code generator",
+    "keywords": [
+        "HTML5",
+        "generator"
+    ],
+    "homepage": "https://github.com/arnobaer/Summoning/",
+    "license": "GPL3",
+    "authors": [
+        {
+            "name": "Bernhard Arnold",
+            "email": "bernhard.arnold@burgried.at"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    }
+}
