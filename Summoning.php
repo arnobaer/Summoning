@@ -1,23 +1,4 @@
-<?php
-
-/*  Summoning - yet another HTML5 code generator
- *  Copyright (C) 2013, 2018  Bernhard Arnold <bernhard.arnold@burgried.at>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-namespace Summoning;
+<?php namespace Summoning;
 
 if (!defined('SUMMONING_DEBUG')) {
   define('SUMMONING_DEBUG', true);
@@ -72,7 +53,7 @@ class Node {
     'controls' => array('audio', 'video'),
     'coords' => array('area'),
     'data' => array('object'),
-    'data-*' => array(), // TODO: implement variable attribute keys
+    'data-*' => array(), // todo
     'datetime' => array('del', 'ins', 'time'),
     'default' => array('track'),
     'defer' => array('script'),
@@ -82,7 +63,6 @@ class Node {
     'href' => array('a', 'area', 'base', 'link'),
     'http-equiv' => array('meta'),
     'id' => array(),
-    // TODO: add missing HTML5 attributes
     'label' => array('track', 'option', 'optgroup'),
     'lang' => array(),
     'rel' => array('a', 'area', 'link'),
@@ -111,7 +91,7 @@ class Node {
       return $this;
     }
     if (SUMMONING_DEBUG) {
-      $message = "node error: invalid callback <method={$method}, args=[" . join(', ', $args) ."]>";
+      $message = "node error: invalid callback <method=" . $method . ", args=[" . join(', ', $args) ."]>";
       throw new \Exception($message);
     }
   }
@@ -147,7 +127,11 @@ class Node {
     if (false === $this->_parent) {
       $data[] = join('', array('<!DOCTYPE ', Node::doctype, '>', PHP_EOL));
     }
-    $data[] = "<{$tag}{$attrs}>$children</{$tag}>";
+    if (count($this->_children)) {
+      $data[] = "<{$tag}{$attrs}>$children</{$tag}>";
+    } else {
+      $data[] = "<{$tag}{$attrs}>";
+    }
     return join('', $data);
   }
   protected function _render_attrs() {
