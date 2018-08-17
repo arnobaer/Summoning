@@ -88,6 +88,10 @@ class Node {
       $this->append($node);
       return $node;
     }
+    // Rename clashing attribute names ('_title' -> 'title')
+    if (substr($method, 0, 1) == '_') {
+      $method = substr($method, 1);
+    }
     if ($this->_is_valid_attr($method)) {
       $this->_attrs[$method] = join(' ', $args);
       return $this;
@@ -125,16 +129,16 @@ class Node {
     $tag = $this->_tag;
     $attrs = $this->_render_attrs();
     $children = $this->_render_children();
-    $data = array();
-    if (false === $this->_parent) {
-      $data[] = join('', array('<!DOCTYPE ', Node::DOCTYPE, '>', PHP_EOL));
+    $result = array();
+    if (false === $this->_parent and $this->_tag == 'html') {
+      $result[] = join('', array('<!DOCTYPE ', Node::DOCTYPE, '>', PHP_EOL));
     }
     if (count($this->_children)) {
-      $data[] = "<{$tag}{$attrs}>$children</{$tag}>";
+      $result[] = "<{$tag}{$attrs}>$children</{$tag}>";
     } else {
-      $data[] = "<{$tag}{$attrs}>";
+      $result[] = "<{$tag}{$attrs}>";
     }
-    return join('', $data);
+    return join('', $result);
   }
   protected function _render_attrs() {
     $pairs = array();
