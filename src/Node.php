@@ -1,4 +1,6 @@
-<?php namespace Summoning;
+<?php
+
+namespace Summoning;
 
 if (!defined('SUMMONING_DEBUG')) {
   define('SUMMONING_DEBUG', true);
@@ -9,8 +11,8 @@ class Node {
   protected $_attrs;
   protected $_parent = false;
   protected $_children;
-  public const doctype = 'html';
-  public const valid_tags = array(
+  const DOCTYPE = 'html';
+  const TAGS = array(
     'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
     'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',
     'canvas', 'caption', 'cite', 'code', 'col', 'colgroup',
@@ -32,7 +34,7 @@ class Node {
     'var', 'video',
     'wbr',
   );
-  public const valid_attrs = array(
+  const ATTRS = array(
     'accept' => array('input'),
     'accept-charset' => array('form'),
     'accesskey' => array(),
@@ -109,15 +111,15 @@ class Node {
     return $this->toHtml();
   }
   protected function _is_valid_tag($tag) {
-    return in_array($tag, Node::valid_tags);
+    return in_array($tag, Node::TAGS);
   }
   protected function _is_valid_attr($attr) {
-    return array_key_exists($attr, Node::valid_attrs)
+    return array_key_exists($attr, Node::ATTRS)
       && $this->_is_valid_attr_tag($attr);
   }
   protected function _is_valid_attr_tag($attr) {
-    return count(Node::valid_attrs[$attr])
-      ? in_array($this->_tag, Node::valid_attrs[$attr]) : true;
+    return count(Node::ATTRS[$attr])
+      ? in_array($this->_tag, Node::ATTRS[$attr]) : true;
   }
   protected function _render_tag() {
     $tag = $this->_tag;
@@ -125,7 +127,7 @@ class Node {
     $children = $this->_render_children();
     $data = array();
     if (false === $this->_parent) {
-      $data[] = join('', array('<!DOCTYPE ', Node::doctype, '>', PHP_EOL));
+      $data[] = join('', array('<!DOCTYPE ', Node::DOCTYPE, '>', PHP_EOL));
     }
     if (count($this->_children)) {
       $data[] = "<{$tag}{$attrs}>$children</{$tag}>";
