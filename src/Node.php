@@ -142,7 +142,7 @@ class Node {
     'lang',
     'spellcheck',
     'style',
-    'tabindex'
+    'tabindex',
     'title',
     'translate',
   );
@@ -187,12 +187,12 @@ class Node {
   protected function _is_valid_tag($tag) {
     return in_array($tag, Node::Tags);
   }
-  protected function _is_root_tag($tag) {
-    return 'html' is $this->_tag; // document root tag
+  protected function _is_root_tag() {
+    return ('html' == $this->_tag); // document root tag
   }
   protected function _is_valid_attr($attr) {
     return $this->_is_valid_global_attr($attr)
-      || $this->_is_valid_attr_tag($attr));
+      || $this->_is_valid_attr_tag($attr);
   }
   protected function _is_valid_global_attr($attr) {
     return in_array($attr, Node::GlobalAttributes)
