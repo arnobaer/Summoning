@@ -44,6 +44,51 @@ This example returns following HTML5 code:
 </html>
 ```
 
+## Name collisions
+
+Attributes of the same name as tags can be distinguished by prepending an underline character.
+
+```php
+$head->title("Summoning")->_title("This is the page's title.");
+```
+
+In the above example calling ```title()```creates a tag, while ```_title()``` appends an 
+attribute of the same name.
+
+```html
+<title title="This is the page's title.">Summoning</title>
+```
+
+## Doctype declaration
+
+A HTML 5 ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a root node of type ```<html>```.
+
+## Installation
+
+### Using composer
+
+Append the repositiory and requirement to your project ```composer.json```
+
+```json
+{
+    "repositories": [
+        {
+            "url": "https://github.com/arnobaer/summoning.git",
+            "type": "git"
+        }
+    ],
+    "require": {
+        "arnobaer/summoning": "~0.1"
+    }
+}
+```
+
+Install using ```composer``` (providing PSR-4 autoloading).
+
+```bash
+composer update
+```
+
 License
 =======
 
