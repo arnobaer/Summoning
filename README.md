@@ -24,7 +24,7 @@ $list->li("baz");
 echo $doc;
 ```
 
-This example returns following HTML5 code:
+This example returns the following valid HTML5 code:
 
 ```html
 <!DOCTYPE html>
@@ -59,9 +59,32 @@ attribute of the same name.
 <title title="This is the page's title.">Summoning</title>
 ```
 
+Following attributes collide with HTML5 tag names and need to be escaped.
+
+ * cite
+ * data
+ * form
+ * label
+ * span
+ * style
+ * title
+
+## Text content
+
+String like object can be passed like other nodes using a node's constructor or ```append()```method.
+
+```php
+$node = (new \Summoning\Node("strong"))->append("expects");
+$body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
+```
+
+```html
+<p>NO-body <strong>expects</strong> the Spanish Inquisition!</p>
+```
+
 ## Doctype declaration
 
-A HTML 5 ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a root node of type ```<html>```.
+A ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a root node of type ```<html>```.
 
 ## Installation
 
