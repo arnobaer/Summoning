@@ -1,5 +1,22 @@
 <?php
 
+/* Summoning - Yet another HTML5 code generator.
+ * Copyright (C) 2013,2018  Bernhard Arnold <bernhard.arnold@burgried.at>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 namespace Summoning;
 
 if (!defined('SUMMONING_DEBUG')) {
@@ -11,7 +28,7 @@ class Node {
   protected $_attrs;
   protected $_parent = false;
   protected $_children;
-  const DocType = 'html';
+  const DocType = 'html'; // HTML 5
   const Tags = array(
     'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
     'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',
@@ -56,12 +73,64 @@ class Node {
     'default' => array('track'),
     'defer' => array('script'),
     'dirname' => array('input', 'textarea'),
-    'disabled' => array('download'),
+    'disabled' => array('button', 'fieldset', 'input', 'optgroup', 'option', 'select', 'textarea'),
+    'download' => array('a', 'area'),
+    'enctype' => array('form'),
+    'for' => array('label', 'output'),
+    'form' => array('button', 'fieldset', 'input', 'label', 'meter', 'object', 'output', 'select', 'textarea'),
+    'formaction' => array('button', 'input'),
+    'headers' => array('td', 'th'),
+    'height' => array('canvas', 'embed', 'iframe', 'img', 'input', 'object', 'video'),
+    'high' => array('meter'),
     'href' => array('a', 'area', 'base', 'link'),
+    'hreflang' => array('a', 'area', 'link'),
     'http-equiv' => array('meta'),
+    'ismap' => array('img'),
+    'kind' => array('track'),
     'label' => array('track', 'option', 'optgroup'),
+    'list' => array('input'),
+    'loop' => array('audio', 'video'),
+    'low' => array('meter'),
+    'max' => array('input', 'meter', 'progress'),
+    'maxlength' => array('input', 'textarea'),
+    'media' => array('a', 'area', 'link', 'source', 'style'),
+    'method' => array('form'),
+    'min' => array('input', 'meter'),
+    'multiple' => array('input', 'select'),
+    'muted' => array('video', 'audio'),
+    'name' => array('button', 'fieldset', 'form', 'iframe', 'input', 'map', 'meta', 'object', 'output', 'param', 'select', 'textarea'),
+    'novalidate' => array('form'),
+    // 'on*' // omitting 'on<event>' attributes
+    'open' => array('details'),
+    'optimum' => array('meter'),
+    'pattern' => array('input'),
+    'placeholder' => array('input', 'textarea'),
+    'poster' => array('video'),
+    'preload' => array('audio', 'video'),
+    'readonly' => array('input', 'textarea'),
     'rel' => array('a', 'area', 'link'),
+    'required' => array('input', 'select', 'textarea'),
+    'reversed' => array('ol'),
+    'rows' => array('textarea'),
+    'rowspan' => array('td', 'th'),
+    'sandbox' => array('iframe'),
+    'scope' => array('th'),
+    'selected' => array('option'),
+    'shape' => array('area'),
+    'size' => array('input', 'select'),
+    'sizes' => array('img', 'link', 'source'),
+    'span' => array('col', 'colgroup'),
     'src' => array('audio', 'embed', 'iframe', 'img', 'input', 'script', 'source', 'track', 'video'),
+    'srcdoc' => array('iframe'),
+    'srclang' => array('track'),
+    'srcset' => array('img', 'source'),
+    'start' => array('ol'),
+    'step' => array('input'),
+    'target' => array('a', 'area', 'base', 'form'),
+    'type' => array('button', 'embed', 'input', 'link', 'menu', 'object', 'script', 'source', 'style'),
+    'usemap' => array('img', 'object'),
+    'value' => array('button', 'input', 'li', 'option', 'meter', 'progress', 'param'),
+    'width' => array('canvas', 'embed', 'iframe', 'img', 'input', 'object', 'video'),
     'wrap' => array('textarea'),
   );
   const GlobalAttributes = array(
@@ -130,7 +199,8 @@ class Node {
   }
   protected function _is_valid_global_attr($attr) {
     return in_array($attr, Node::GlobalAttributes)
-      || substr($attr, 0, 5) == 'data-'; // workaround to accept 'data-...' attributes
+      || substr($attr, 0, 5) == 'data-' // workaround to accept 'data-*' attributes
+      || substr($attr, 0, 2) == 'on'; // workaround for 'on<event>' attributes
   }
   protected function _is_valid_attr_tag($attr) {
     return array_key_exists($attr, Node::Attributes)
