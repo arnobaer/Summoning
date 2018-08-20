@@ -11,8 +11,8 @@ class Node {
   protected $_attrs;
   protected $_parent = false;
   protected $_children;
-  const DOCTYPE = 'html';
-  const TAGS = array(
+  const DocType = 'html';
+  const Tags = array(
     'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
     'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',
     'canvas', 'caption', 'cite', 'code', 'col', 'colgroup',
@@ -34,10 +34,9 @@ class Node {
     'var', 'video',
     'wbr',
   );
-  const ATTRS = array(
+  const Attributes = array(
     'accept' => array('input'),
     'accept-charset' => array('form'),
-    'accesskey' => array(),
     'action' => array('form'),
     'alt' => array('area', 'img', 'input'),
     'async' => array('script'),
@@ -47,32 +46,40 @@ class Node {
     'charset' => array('meta', 'script'),
     'checked' => array('input'),
     'cite' => array('blockquote', 'del', 'ins', 'q'),
-    'class' => array(),
     'cols' => array('textarea'),
     'colspan' => array('td', 'th'),
     'content' => array('meta'),
-    'contenteditable' => array(),
     'controls' => array('audio', 'video'),
     'coords' => array('area'),
     'data' => array('object'),
-    'data-*' => array(), // todo
     'datetime' => array('del', 'ins', 'time'),
     'default' => array('track'),
     'defer' => array('script'),
-    'dir' => array(),
     'dirname' => array('input', 'textarea'),
     'disabled' => array('download'),
     'href' => array('a', 'area', 'base', 'link'),
     'http-equiv' => array('meta'),
-    'id' => array(),
     'label' => array('track', 'option', 'optgroup'),
-    'lang' => array(),
     'rel' => array('a', 'area', 'link'),
     'src' => array('audio', 'embed', 'iframe', 'img', 'input', 'script', 'source', 'track', 'video'),
-    'style' => array(),
-    'tabindex' => array(),
-    'title' => array(),
     'wrap' => array('textarea'),
+  );
+  const GlobalAttributes = array(
+    'accesskey',
+    'class',
+    'contenteditable',
+    // 'data-*', // handled separately
+    'dir',
+    'draggable',
+    'dropzone',
+    'hidden',
+    'id',
+    'lang',
+    'spellcheck',
+    'style',
+    'tabindex'
+    'title',
+    'translate',
   );
   public function __construct($tag, $children=array()) {
     if (SUMMONING_DEBUG && !$this->_is_valid_tag($tag)) {
@@ -115,15 +122,19 @@ class Node {
     return $this->toHtml();
   }
   protected function _is_valid_tag($tag) {
-    return in_array($tag, Node::TAGS);
+    return in_array($tag, Node::Tags);
   }
   protected function _is_valid_attr($attr) {
-    return array_key_exists($attr, Node::ATTRS)
-      && $this->_is_valid_attr_tag($attr);
+    return $this->_is_valid_global_attr($attr)
+      || $this->_is_valid_attr_tag($attr));
+  }
+  protected function _is_valid_global_attr($attr) {
+    return in_array($attr, Node::GlobalAttributes)
+      || substr($attr, 0, 5) == 'data-'; // workaround to accept 'data-...' attributes
   }
   protected function _is_valid_attr_tag($attr) {
-    return count(Node::ATTRS[$attr])
-      ? in_array($this->_tag, Node::ATTRS[$attr]) : true;
+    return array_key_exists($attr, Node::Attributes)
+      && in_array($this->_tag, Node::Attributes[$attr]);
   }
   protected function _render_tag() {
     $tag = $this->_tag;
@@ -131,7 +142,7 @@ class Node {
     $children = $this->_render_children();
     $result = array();
     if (false === $this->_parent and $this->_tag == 'html') {
-      $result[] = join('', array('<!DOCTYPE ', Node::DOCTYPE, '>', PHP_EOL));
+      $result[] = join('', array('<!DocType ', Node::DocType, '>', PHP_EOL));
     }
     if (count($this->_children)) {
       $result[] = "<{$tag}{$attrs}>$children</{$tag}>";
