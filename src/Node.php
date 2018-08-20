@@ -19,10 +19,6 @@
 
 namespace Summoning;
 
-if (!defined('SUMMONING_DEBUG')) {
-  define('SUMMONING_DEBUG', true);
-}
-
 class Node {
   protected $_tag;
   protected $_attrs;
@@ -151,8 +147,8 @@ class Node {
     'translate',
   );
   public function __construct($tag, $children=array()) {
-    if (SUMMONING_DEBUG && !$this->_is_valid_tag($tag)) {
-      throw new \Exception("node error: invalid tag name <{$tag}>");
+    if (!$this->_is_valid_tag($tag)) {
+      throw new \Exception("error: invalid tag name <{$tag}>");
     }
     $this->_tag = $tag;
     $this->_children = $children;
@@ -172,10 +168,8 @@ class Node {
       $this->_attrs[$method] = join(' ', $args);
       return $this;
     }
-    if (SUMMONING_DEBUG) {
-      $message = "node error: invalid callback <method=" . $method . ", args=[" . join(', ', $args) ."]>";
-      throw new \Exception($message);
-    }
+    $message = "node error: invalid callback <method=" . $method . ", args=[" . join(', ', $args) ."]>";
+    throw new \Exception($message);
   }
   public function append($node) {
     if ($node instanceof Node) {
@@ -193,6 +187,9 @@ class Node {
   protected function _is_valid_tag($tag) {
     return in_array($tag, Node::Tags);
   }
+  protected function _is_root_tag($tag) {
+    return 'html' is $this->_tag; // document root tag
+  }
   protected function _is_valid_attr($attr) {
     return $this->_is_valid_global_attr($attr)
       || $this->_is_valid_attr_tag($attr));
@@ -206,13 +203,16 @@ class Node {
     return array_key_exists($attr, Node::Attributes)
       && in_array($this->_tag, Node::Attributes[$attr]);
   }
+  protected function _render_doctype() {
+    return join('', array('<!DOCTYPE ', Node::DocType, '>', PHP_EOL));
+  }
   protected function _render_tag() {
     $tag = $this->_tag;
     $attrs = $this->_render_attrs();
     $children = $this->_render_children();
     $result = array();
-    if (false === $this->_parent and $this->_tag == 'html') {
-      $result[] = join('', array('<!DocType ', Node::DocType, '>', PHP_EOL));
+    if ($this->_is_root_tag()) {
+      $result[] = $this->_render_doctype();
     }
     if (count($this->_children)) {
       $result[] = "<{$tag}{$attrs}>$children</{$tag}>";
