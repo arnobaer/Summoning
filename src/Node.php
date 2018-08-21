@@ -20,11 +20,9 @@
 namespace Summoning;
 
 class Node {
-  protected $_tag;
-  protected $_attrs;
-  protected $_parent = false;
-  protected $_children;
   const DocType = 'html'; // HTML 5
+  const AttributeEscape = '_';
+  const TemplatePrefix = 'tpl_';
   const Tags = array(
     'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
     'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',
@@ -146,6 +144,11 @@ class Node {
     'title',
     'translate',
   );
+  protected $_tag;
+  protected $_attrs;
+  protected $_parent = false;
+  protected $_children;
+  protected static $_templates = array();
   public function __construct($tag, $children=array()) {
     if (!$this->_is_valid_tag($tag)) {
       throw new \Exception("error: invalid tag name <{$tag}>");
@@ -155,21 +158,31 @@ class Node {
     $this->_attrs = array();
   }
   public function __call($method, $args) {
+    if ($this->_is_valid_template($method)) {
+      $closure = self::$_templates[$method];
+      $node = call_user_func_array($closure, $args);
+      $this->append($node);
+      return $node;
+    }
     if ($this->_is_valid_tag($method)) {
       $node = new Node($method, $args);
       $this->append($node);
       return $node;
     }
-    // Rename clashing attribute names ('_title' -> 'title')
-    if (substr($method, 0, 1) == '_') {
-      $method = substr($method, 1);
+    // Un-escape clashing attribute names ('_title' -> 'title')
+    $length = strlen(self::AttributeEscape);
+    if (substr($method, 0, $length) == self::AttributeEscape) {
+      $method = substr($method, $length);
     }
     if ($this->_is_valid_attr($method)) {
       $this->_attrs[$method] = join(' ', $args);
       return $this;
     }
-    $message = "node error: invalid callback <method=" . $method . ", args=[" . join(', ', $args) ."]>";
+    $message = "error: invalid callback <method=" . $method . ", args=[" . join(', ', $args) ."]>";
     throw new \Exception($message);
+  }
+  public function parent() {
+    return $_parent;
   }
   public function append($node) {
     if ($node instanceof Node) {
@@ -178,14 +191,21 @@ class Node {
     $this->_children[] = $node;
     return $this;
   }
+  public function register($name, $template) {
+    self::$_templates["tpl_$name"] = $template;
+  }
   public function toHtml() {
     return $this->_render_tag();
   }
   public function __toString() {
     return $this->toHtml();
   }
+  protected function _is_valid_template($name) {
+    $length = strlen(Node::TemplatePrefix);
+    return substr($name, 0, $length) == Node::TemplatePrefix;
+  }
   protected function _is_valid_tag($tag) {
-    return in_array($tag, Node::Tags);
+    return in_array($tag, self::Tags);
   }
   protected function _is_root_tag() {
     return ('html' == $this->_tag); // document root tag
