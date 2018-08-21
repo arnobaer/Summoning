@@ -86,6 +86,40 @@ $body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
 
 A ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a root node of type ```<html>```.
 
+## Templates
+
+Reusable templates can be registered using PHP closures.
+
+```php
+$body->register('link', function($url, $title) {
+  $a = new \Summoning\Node('a');
+  $a->href($url)->_title($title)->append($title);
+  return $a;
+});
+$body->register('list', function($items) {
+  $ul = new \Summoning\Node('ul');
+  $ul->class("w3-ul");
+  foreach ($items as $title => $url)
+    $ul->li()->tpl_link($url, $title);
+  return $ul;
+});
+$body->tpl_list(array(
+  "HTML5 Tutorial" => "https://www.w3schools.com/html/default.asp",
+  "CSS Tutorial" => "https://www.w3schools.com/css/default.asp",
+  "PHP 5 Tutorial" => "https://www.w3schools.com/php/default.asp"
+));
+```
+
+```html
+<body>
+  <ul class="w3-ul">
+    <li><a href="https://www.w3schools.com/html/" title="HTML5 Tutorial">HTML5 Tutorial</a></li>
+    <li><a href="https://www.w3schools.com/css/" title="CSS Tutorial">CSS Tutorial</a></li>
+    <li><a href="https://www.w3schools.com/php/" title="PHP 5 Tutorial">PHP 5 Tutorial</a></li>
+  </ul>
+</body>
+```
+
 ## Installation
 
 ### Using composer
