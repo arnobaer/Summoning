@@ -43,6 +43,18 @@ This example returns the following valid HTML5 code:
   </body>
 </html>
 ```
+## Creating nodes
+
+A root node can be created like any PHP instance.
+
+```php
+$html = new \Summoning\Node("html");
+```
+Child elements withpout a parent can be also created using `create($tag)`.
+
+```php
+$div = $html->create("div");  // independend <div> node
+```
 
 ## Name collisions
 
@@ -69,12 +81,24 @@ Following attributes collide with HTML5 tag names and need to be escaped.
  * style
  * title
 
+## Attributes with hyphens
+
+Attribute names containing a hyphen can be escaped using an underline character.
+
+```php
+$meta->http_equiv("refresh")->content("30");
+```
+
+```html
+<meta http-equiv="refresh" content="30">
+```
+
 ## Text content
 
 String like object can be passed like other nodes using a node's constructor or ```append()```method.
 
 ```php
-$node = (new \Summoning\Node("strong"))->append("expects");
+$node = $body->create("strong")->append("expects");
 $body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
 ```
 
@@ -91,13 +115,13 @@ A ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a 
 Reusable templates can be registered using PHP closures.
 
 ```php
-$body->register('link', function($url, $title) {
-  $a = new \Summoning\Node('a');
+$body->register("link", function($url, $title) {
+  $a = new \Summoning\Node("a");
   $a->href($url)->_title($title)->append($title);
   return $a;
 });
-$body->register('list', function($items) {
-  $ul = new \Summoning\Node('ul');
+$body->register("list", function($items) {
+  $ul = new \Summoning\Node("ul");
   $ul->class("w3-ul");
   foreach ($items as $title => $url)
     $ul->li()->tpl_link($url, $title);
