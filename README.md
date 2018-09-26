@@ -43,6 +43,7 @@ This example returns the following valid HTML5 code:
   </body>
 </html>
 ```
+
 ## Creating nodes
 
 A root node can be created like any PHP instance.
@@ -73,13 +74,16 @@ attribute of the same name.
 
 Following attributes collide with HTML5 tag names and need to be escaped.
 
- * cite
- * data
- * form
- * label
- * span
- * style
- * title
+| attribute    | example             |     | tag      | example               |     
+| ------------ | ------------------- | --- | -------- | --------------------- |
+| \_cite       | `cite="url"`        |     | cite     | `<cite>text</cite>`   |
+| \_data       | `data="url"`        |     | data     | `<data>foo</data>`    |
+| \_form       | `form="id"`         |     | form     | `<form>...</form>`    |
+| \_label      | `label="text"`      |     | label    | `<label>text</label>` |
+| \_span       | `span="2"`          |     | span     | `<span>text</span>`   |
+| \_style      | `style="color:red"` |     | style    | `<style>.p{}</style>` |
+| \_title      | `title="text"`      |     | title    | `<title>text</title>` |
+
 
 ## Attributes with hyphens
 
