@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Version 0.1.5
+// Version 0.1.6
 
 namespace Summoning;
 
