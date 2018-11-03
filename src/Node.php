@@ -184,7 +184,7 @@ class Node {
 		}
 		// Un-escape clashing attribute names ('_title' -> 'title')
 		if (substr($context, 0, strlen(self::AttributeEscape)) == self::AttributeEscape) {
-			$context = substr($context, $length);
+			$context = substr($context, strlen(self::AttributeEscape));
 		}
 		// Accept attributes with escaped hyphens ('http_equiv' -> 'http-equiv')
 		$context = str_replace('_', '-', $context);
