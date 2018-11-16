@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Version 0.1.6
+// Version 0.2.0
 
 namespace Summoning;
 
@@ -48,6 +48,10 @@ class Node {
 		'var', 'video',
 		'wbr',
 	);
+	const VoidElements = array(
+		'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+		'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr',
+	);
 	const Attributes = array(
 		'accept' => array('input'),
 		'accept-charset' => array('form'),
@@ -65,6 +69,7 @@ class Node {
 		'content' => array('meta'),
 		'controls' => array('audio', 'video'),
 		'coords' => array('area'),
+		'crossorigin' => array('img', 'script', 'video'),
 		'data' => array('object'),
 		'datetime' => array('del', 'ins', 'time'),
 		'default' => array('track'),
@@ -148,8 +153,8 @@ class Node {
 		'translate',
 	);
 	protected $_tag;
+	protected $_parent;
 	protected $_attrs;
-	protected $_parent = null;
 	protected $_children;
 	protected static $_templates = array();
 	public function __construct($tag, $children=array()) {
@@ -157,8 +162,9 @@ class Node {
 			throw new \Exception("error: invalid tag name <{$tag}>");
 		}
 		$this->_tag = $tag;
-		$this->_children = $children;
+		$this->_parent = null;
 		$this->_attrs = array();
+		$this->_children = $children;
 	}
 	public function __call($method, $args) {
 		$context = $method;
@@ -172,6 +178,7 @@ class Node {
 		// Test for valid template
 		if ($this->_is_valid_template($context)) {
 			$closure = self::$_templates[$context];
+			array_unshift($args, $this); // prepend context
 			$node = call_user_func_array($closure, $args);
 			$this->append($node);
 			return $node;
@@ -203,9 +210,9 @@ class Node {
 	public function create($tag) {
 		return new Node($tag); // create a node without a parent
 	}
-	public function register($name, $template) {
+	public function register($name, $callback) {
 		$key = join('', array(self::TemplatePrefix, "$name"));
-		self::$_templates[$key] = $template;
+		self::$_templates[$key] = $callback;
 	}
 	public function toHtml() {
 		return $this->_render_tag();
@@ -253,10 +260,10 @@ class Node {
 		if ($this->_is_root_tag()) {
 			$result[] = $this->_render_doctype();
 		}
-		if (count($this->_children)) {
-			$result[] = "<{$tag}{$attrs}>$children</{$tag}>";
+		if (in_array($tag, self::VoidElements)) {
+			$result[] = "<{$tag}{$attrs} />";
 		} else {
-			$result[] = "<{$tag}{$attrs}>";
+			$result[] = "<{$tag}{$attrs}>$children</{$tag}>";
 		}
 		return join('', $result);
 	}

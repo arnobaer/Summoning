@@ -51,11 +51,17 @@ A root node can be created like any PHP instance.
 ```php
 $html = new \Summoning\Node("html");
 ```
-Child elements withpout a parent can be also created using `create($tag)`.
+Child elements without a parent can be also created using method `create($tag)`.
 
 ```php
-$div = $html->create("div");  // independend <div> node
+$div = $html->create("div");  // independent <div> node
 ```
+
+## Appending
+
+Appending overwrites a nodes parent attribute. Using `$parent->append($node)`
+will assign `$parent` as parent of `$node` regardless if `$node` got a parent
+assigned before.
 
 ## Name collisions
 
@@ -65,8 +71,8 @@ Attributes of the same name as tags can be distinguished by prepending an underl
 $head->title("Summoning")->_title("This is the page's title.");
 ```
 
-In the above example calling ```title()```creates a tag, while ```_title()``` appends an 
-attribute of the same name.
+In the above example calling ```title()```creates a tag, while ```_title()```
+appends an attribute of the same name.
 
 ```html
 <title title="This is the page's title.">Summoning</title>
@@ -112,20 +118,23 @@ $body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
 
 ## Doctype declaration
 
-A ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a root node of type ```<html>```.
+A ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a
+root node of type ```<html>```.
 
 ## Templates
 
-Reusable templates can be registered using PHP closures.
+Reusable templates can be registered using PHP closures. The first attribute
+`$parent` is mandatory and provides a reference to the node executing the
+template closure.
 
 ```php
-$body->register("link", function($url, $title) {
-  $a = new \Summoning\Node("a");
+$body->register("link", function($parent, $url, $title) {
+  $a = $parent->create("a");
   $a->href($url)->_title($title)->append($title);
   return $a;
 });
-$body->register("list", function($items) {
-  $ul = new \Summoning\Node("ul");
+$body->register("list", function($parent, $items) {
+  $ul = $parent->create("ul");
   $ul->class("w3-ul");
   foreach ($items as $title => $url)
     $ul->li()->tpl_link($url, $title);
@@ -141,9 +150,9 @@ $body->tpl_list(array(
 ```html
 <body>
   <ul class="w3-ul">
-    <li><a href="https://www.w3schools.com/html/" title="HTML5 Tutorial">HTML5 Tutorial</a></li>
-    <li><a href="https://www.w3schools.com/css/" title="CSS Tutorial">CSS Tutorial</a></li>
-    <li><a href="https://www.w3schools.com/php/" title="PHP 5 Tutorial">PHP 5 Tutorial</a></li>
+    <li><a href="https://www.w3schools.com/html/default.asp" title="HTML5 Tutorial">HTML5 Tutorial</a></li>
+    <li><a href="https://www.w3schools.com/css/default.asp" title="CSS Tutorial">CSS Tutorial</a></li>
+    <li><a href="https://www.w3schools.com/php/default.asp" title="PHP 5 Tutorial">PHP 5 Tutorial</a></li>
   </ul>
 </body>
 ```
@@ -163,7 +172,7 @@ Append the repositiory and requirement to your project ```composer.json```
         }
     ],
     "require": {
-        "arnobaer/summoning": "~0.1"
+        "arnobaer/summoning": "~0.2"
     }
 }
 ```
