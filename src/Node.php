@@ -87,6 +87,7 @@ class Node {
 		'href' => array('a', 'area', 'base', 'link'),
 		'hreflang' => array('a', 'area', 'link'),
 		'http-equiv' => array('meta'),
+		'integrity' => array('link', 'script'), // non HTML5 spec
 		'ismap' => array('img'),
 		'kind' => array('track'),
 		'label' => array('track', 'option', 'optgroup'),
