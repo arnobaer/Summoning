@@ -219,7 +219,7 @@ class Node {
 		return $this->_render_tag();
 	}
 	public function __toString() {
-		return $this->toHtml();
+		return $this->_render_tag();
 	}
 	protected function _is_valid_template($name) {
 		return substr($name, 0, strlen(self::TemplatePrefix)) == self::TemplatePrefix;
