@@ -14,7 +14,7 @@ $head->title("Summoning");
 $head->link()->rel("stylesheet")->href("https://www.w3schools.com/w3css/4/w3.css");
 
 $body = $doc->body();
-$body->p("Hello")->id("message")->class("w3-text-red", "w3-margin")->append(" world!");
+$body->p("Hello")->id("message")->class("w3-text-red", " w3-margin")->append(" world!");
 
 $list = $body->ul()->class("w3-ul w3-margin");
 $list->li("foo");
