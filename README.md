@@ -172,7 +172,7 @@ Append the repositiory and requirement to your project ```composer.json```
         }
     ],
     "require": {
-        "arnobaer/summoning": "~0.2"
+        "arnobaer/summoning": "~0.3"
     }
 }
 ```
@@ -183,7 +183,13 @@ Install using ```composer``` (providing PSR-4 autoloading).
 composer update
 ```
 
+### Using git repo
+
+```php
+include 'path/to/Summoning/src/Node.php';
+```
+
 License
 =======
 
-GNU General Public License Version 3
+Summoning is licensed under the GNU General Public License Version 3.
