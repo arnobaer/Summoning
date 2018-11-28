@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Version 0.2.0
+// Version 0.3.0
 
 namespace Summoning;
 
@@ -103,7 +103,7 @@ class Node {
 		'muted' => array('video', 'audio'),
 		'name' => array('button', 'fieldset', 'form', 'iframe', 'input', 'map', 'meta', 'object', 'output', 'param', 'select', 'textarea'),
 		'novalidate' => array('form'),
-		// 'on*' // omitting 'on<event>' attributes
+		// 'on*' // 'on<event>' handled separately
 		'open' => array('details'),
 		'optimum' => array('meter'),
 		'pattern' => array('input'),
@@ -138,6 +138,7 @@ class Node {
 	);
 	const GlobalAttributes = array(
 		'accesskey',
+		// 'aria-*', // WAI ARIA, handled separately
 		'class',
 		'contenteditable',
 		// 'data-*', // handled separately
@@ -147,6 +148,7 @@ class Node {
 		'hidden',
 		'id',
 		'lang',
+		'role', // WAI ARIA
 		'spellcheck',
 		'style',
 		'tabindex',
@@ -160,7 +162,7 @@ class Node {
 	protected static $_templates = array();
 	public function __construct($tag, $children=array()) {
 		if (!$this->_is_valid_tag($tag)) {
-			throw new \Exception("error: invalid tag name <{$tag}>");
+			throw new \Exception("Invalid element name <{$tag}>");
 		}
 		$this->_tag = $tag;
 		$this->_parent = null;
@@ -202,7 +204,7 @@ class Node {
 			return $this;
 		}
 		// On errors
-		$message = "error: invalid callback <method=" . $method . ", args=[" . join(', ', $args) ."]>";
+		$message = "Invalid attribute '{$context}' for element <{$this->_tag}>";
 		throw new \Exception($message);
 	}
 	public function parent() {
@@ -236,6 +238,7 @@ class Node {
 	}
 	protected function _is_valid_global_attr($attr) {
 		return in_array($attr, self::GlobalAttributes)
+			|| substr($attr, 0, 5) == 'aria-' // workaround to accept 'aria-*' attributes
 			|| substr($attr, 0, 5) == 'data-' // workaround to accept 'data-*' attributes
 			|| substr($attr, 0, 2) == 'on'; // workaround for 'on<event>' attributes
 	}
