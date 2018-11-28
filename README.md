@@ -31,7 +31,7 @@ This example returns the following valid HTML5 code:
 <html lang="en">
   <head>
     <title>Summoning</title>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
   </head>
   <body>
     <p id="message" class="w3-text-red w3-margin">Hello world!</p>
@@ -114,6 +114,12 @@ $body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
 
 ```html
 <p>NO-body <strong>expects</strong> the Spanish Inquisition!</p>
+```
+
+It is also possible to append predefined HTML codes as strings.
+
+```php
+$head->append('<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />');
 ```
 
 ## Doctype declaration
