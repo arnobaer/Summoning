@@ -178,7 +178,7 @@ Append the repositiory and requirement to your project ```composer.json```
         }
     ],
     "require": {
-        "arnobaer/summoning": "~0.3"
+        "arnobaer/summoning": "~0.4"
     }
 }
 ```
