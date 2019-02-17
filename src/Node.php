@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Version 0.4.0
+// Version 0.5.0
 
 namespace Summoning;
 
@@ -207,20 +207,18 @@ class Node extends Rules {
 	/** Dynamic method handler */
 	public function __call($method, $args) {
 		$context = $method;
-		// Handle multiple argument method append(arg, ...)
-		if ($context == 'append') {
-			foreach ($args as $arg) {
-				$this->_append($arg);
-			}
-			return $this;
-		}
 		// Test for valid template
 		if ($this->_is_valid_template($context)) {
 			$closure = self::$_templates[$context];
 			array_unshift($args, $this); // prepend context
 			$node = call_user_func_array($closure, $args);
-			$this->append($node);
-			return $node;
+			if ($node instanceof Node) {
+				if (null === $node->parent()) {
+					$this->append($node);
+				}
+				return $node;
+			}
+			return $this;
 		}
 		// Test for valid element
 		if ($this->_is_valid_tag($context)) {
@@ -244,14 +242,36 @@ class Node extends Rules {
 		throw new \Exception($message);
 	}
 
+	/** Append any number of nodes or strings, sets nodes parent to this. */
+	public function append(...$nodes) {
+		foreach ($nodes as $node) {
+			if ($node instanceof Node) {
+				$node->_parent = $this;
+			}
+		}
+		$this->_children = array_merge($this->_children, $nodes);
+		return $this;
+	}
+
+	/** Prepends any number of nodes or strings, sets nodes parent to this. */
+	public function prepend(...$nodes) {
+		foreach ($nodes as $node) {
+			if ($node instanceof Node) {
+				$node->_parent = $this;
+			}
+		}
+		$this->_children = array_merge($nodes, $this->_children);
+		return $this;
+	}
+
 	/** Returns node's parent node or null if no parent assigned */
 	public function parent() {
 		return $this->_parent;
 	}
 
 	/** Create a new independed node (no parent) */
-	public function create($tag) {
-		return new Node($tag); // create a node without a parent
+	public static function create($tag) {
+		return new Node($tag); // create a node without parent
 	}
 
 	/** Register template function */
@@ -304,15 +324,6 @@ class Node extends Rules {
 	protected function _is_valid_attr_tag($attr) {
 		return array_key_exists($attr, self::Attributes)
 			&& in_array($this->_tag, self::Attributes[$attr]);
-	}
-
-	/** Append any node or string, sets nodes parent to this. */
-	protected function _append($node) {
-		if ($node instanceof Node) {
-			$node->_parent = $this;
-		}
-		$this->_children[] = $node;
-		return $this;
 	}
 
 	/** Render HTML doctype. */

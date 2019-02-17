@@ -51,28 +51,38 @@ A root node can be created like any PHP instance.
 ```php
 $html = new \Summoning\Node("html");
 ```
-Child elements without a parent can be also created using method `create($tag)`.
+
+Child elements without a parent can be also created using method `create()`.
 
 ```php
 $div = $html->create("div");  // independent <div> node
 ```
 
-## Appending
+As method `create()` is static it can be also called directly without requiring
+an object.
 
-Appending overwrites a nodes parent attribute. Using `$parent->append($node)`
-will assign `$parent` as parent of `$node` regardless if `$node` got a parent
-assigned before.
+```php
+$div = \Summoning\Node::create("div");  // independent <div> node
+```
+
+## Appending and prepending
+
+Appending or prepending overwrites a node's parent attribute. Using
+`$parent->append($node)` will assign `$parent` as parent of `$node` regardless
+if `$node` got a parent assigned before. Same applies for prepending nodes by
+using method `prepend()`.
 
 ## Name collisions
 
-Attributes of the same name as tags can be distinguished by prepending an underline character.
+Attributes of the same name as tags can be distinguished by prepending an
+underline character.
 
 ```php
 $head->title("Summoning")->_title("This is the page's title.");
 ```
 
-In the above example calling ```title()```creates a tag, while ```_title()```
-appends an attribute of the same name.
+In the above example calling `title()` creates a tag, while `_title()` appends
+an attribute of the same name.
 
 ```html
 <title title="This is the page's title.">Summoning</title>
@@ -90,8 +100,8 @@ Following attributes collide with HTML5 tag names and need to be escaped.
 | \_style      | `style="color:red"` |     | style    | `<style>.p{}</style>` |
 | \_title      | `title="text"`      |     | title    | `<title>text</title>` |
 
-Note that any valid attribute can be prefixed with an underline character regardless
-if it is shadowed by a tag name or not.
+Note that any valid attribute can be prefixed with an underline character
+regardless if it is shadowed by a tag name or not.
 
 ## Attributes with hyphens
 
@@ -107,23 +117,24 @@ $meta->http_equiv("refresh")->content("30");
 
 ## Text content
 
-String like object can be passed like other nodes using a node constructor or ```append()```
-method.
+String like object can be passed like other nodes by calling a tag method or
+methods `append()` and `prepend()`.
 
 ```php
 $node = $body->create("strong")->append("expects");
-$body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
+$body->p()->append($node)->append(" the Spanish Inquisition!")->prepend("NO-body ");
 ```
 
 ```html
 <p>NO-body <strong>expects</strong> the Spanish Inquisition!</p>
 ```
 
-Both node constructors and ```append()``` methods accept multiple arguments that are joined.
+Tag methods as well as methods `append()` and `prepend()` accept multiple
+arguments that are joined (without spaces).
 
 ```php
 $context = "Spanish Inquisition";
-$body->p("Who expects the", " ", $context)->append(" ", "before ", 8, " o'clock?");
+$body->p("Who expects the", " ", $context)->append(" before ", 8, " o'clock?");
 ```
 
 ```html
@@ -136,12 +147,13 @@ It is also possible to append predefined HTML codes as strings.
 $head->append('<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />');
 ```
 
-Multiple strings and other elements can be passed to any element method or by using method ```append()```
+Multiple strings and other elements can be passed to any tag method or by
+calling method `append()`.
 
 ## Doctype declaration
 
-A ```<!DOCTYPE html>``` declaration is automatically prepended when rendering a
-root node of type ```<html>```.
+A `<!DOCTYPE html>` declaration is automatically prepended when rendering a
+root node of type `<html>`.
 
 ## Templates
 
@@ -179,11 +191,24 @@ $body->tpl_list(array(
 </body>
 ```
 
+### Notes
+
+ - If the closure does **not** return a `Node` type object the call returns a reference to its parent node.
+ - If the closure does return a `Node` type object **without** a parent it will assign the calling node as parent.
+
+
+```php
+$body->register("spam", function($parent) {
+  $parent->div();
+});
+$body->tpl_spam(); // '<div></div>'
+```
+
 ## Installation
 
 ### Using composer
 
-Append the repositiory and requirement to your project ```composer.json```
+Append the repository and requirement to your project `composer.json`
 
 ```json
 {
