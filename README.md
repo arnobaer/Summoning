@@ -196,14 +196,6 @@ $body->tpl_list(array(
  - If the closure does **not** return a `Node` type object the call returns a reference to its parent node.
  - If the closure does return a `Node` type object **without** a parent it will assign the calling node as parent.
 
-
-```php
-$body->register("spam", function($parent) {
-  $parent->div();
-});
-$body->tpl_spam(); // '<div></div>'
-```
-
 ## Installation
 
 ### Using composer
