@@ -90,6 +90,8 @@ Following attributes collide with HTML5 tag names and need to be escaped.
 | \_style      | `style="color:red"` |     | style    | `<style>.p{}</style>` |
 | \_title      | `title="text"`      |     | title    | `<title>text</title>` |
 
+Note that any valid attribute can be prefixed with an underline character regardless
+if it is shadowed by a tag name or not.
 
 ## Attributes with hyphens
 
@@ -105,7 +107,8 @@ $meta->http_equiv("refresh")->content("30");
 
 ## Text content
 
-String like object can be passed like other nodes using a node's constructor or ```append()```method.
+String like object can be passed like other nodes using a node constructor or ```append()```
+method.
 
 ```php
 $node = $body->create("strong")->append("expects");
@@ -116,11 +119,24 @@ $body->p("NO-body ")->append($node)->append(" the Spanish Inquisition!");
 <p>NO-body <strong>expects</strong> the Spanish Inquisition!</p>
 ```
 
+Both node constructors and ```append()``` methods accept multiple arguments that are joined.
+
+```php
+$context = "Spanish Inquisition";
+$body->p("Who expects the", " ", $context)->append(" ", "before ", 8, " o'clock?");
+```
+
+```html
+<p>Who expects the Spanish Inquisition before 8 o'clock?</p>
+```
+
 It is also possible to append predefined HTML codes as strings.
 
 ```php
 $head->append('<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />');
 ```
+
+Multiple strings and other elements can be passed to any element method or by using method ```append()```
 
 ## Doctype declaration
 
