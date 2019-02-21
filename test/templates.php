@@ -1,10 +1,23 @@
-<?php
+<?php namespace Summoning;
 
 // Testing templates
 
 require_once(__DIR__ . "/../src/Node.php");
 
-$html = new \Summoning\Node('html');
+// Register templates static
+Node::register("static", function($parent) {
+  $parent->span()->class("static");
+});
+assert(Node::create("div")->tpl_static() == '<div><span class="static"></span></div>');
+
+// Register templates from instances
+Node::create("div")->register("instance", function($parent) {
+  $parent->span()->class("instance");
+});
+assert(Node::create("div")->tpl_instance() == '<div><span class="instance"></span></div>');
+
+// Template example
+$html = Node::create('html');
 
 $html->register("link", function($parent, $url, $title) {
   $a = $parent->create("a");
