@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Version 0.4.0
+// Version 0.5.0
 
 namespace Summoning;
 
@@ -160,6 +160,7 @@ class Rules {
 		'width' => array('canvas', 'embed', 'iframe', 'img', 'input', 'object', 'video'),
 		'wrap' => array('textarea'),
 	);
+
 	/** List containing valid global attributes (to be used with any element) */
 	const GlobalAttributes = array(
 		'accesskey',
@@ -179,6 +180,32 @@ class Rules {
 		'tabindex',
 		'title',
 		'translate',
+	);
+
+	/** List containing void elements (<tag />) */
+	const BooleanAttributes = array(
+		'async',
+		'autofocus',
+		'autoplay',
+		'checked',
+		'controls',
+		'default',
+		'defer',
+		'disabled',
+		'download',
+		'hidden',
+		'ismap',
+		'loop',
+		'multiple',
+		'muted',
+		'novalidate',
+		'open',
+		'readonly',
+		'required',
+		'reversed',
+		'sandbox',
+		'scoped',
+		'selected',
 	);
 }
 
@@ -208,7 +235,7 @@ class Node extends Rules {
 	public function __call($method, $args) {
 		$context = $method;
 		// Test for valid template
-		if ($this->_is_valid_template($context)) {
+		if ($this->_has_template($context)) {
 			$closure = self::$_templates[$context];
 			array_unshift($args, $this); // prepend context
 			$node = call_user_func_array($closure, $args);
@@ -275,7 +302,7 @@ class Node extends Rules {
 	}
 
 	/** Register template function */
-	public function register($name, $callback) {
+	public static function register($name, $callback) {
 		$key = join('', array(self::TemplatePrefix, "$name"));
 		self::$_templates[$key] = $callback;
 	}
@@ -291,7 +318,7 @@ class Node extends Rules {
 	}
 
 	/** Check if name is a template (using template prefix) */
-	protected function _is_valid_template($name) {
+	protected function _has_template($name) {
 		return str_startswith($name, self::TemplatePrefix);
 	}
 
@@ -318,6 +345,11 @@ class Node extends Rules {
 			|| str_startswith($attr, 'aria-')
 			|| str_startswith($attr, 'data-')
 			|| str_startswith($attr, 'on');
+	}
+
+	/** Check if attribute is a global attribute */
+	protected function _is_void_attr($attr) {
+		return in_array($attr, self::BooleanAttributes);
 	}
 
 	/** Check if attribute is valid with tag */
@@ -356,7 +388,10 @@ class Node extends Rules {
 			$pairs[] = ''; // to prepend a whitespace
 		}
 		foreach ($attrs as $key => $value) {
-			$pairs[] = "{$key}=\"{$value}\"";
+			if ($this->_is_void_attr($key))
+				$pairs[] = "{$key}";
+			else
+				$pairs[] = "{$key}=\"{$value}\"";
 		}
 		return join(' ', $pairs);
 	}

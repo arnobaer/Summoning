@@ -2,7 +2,7 @@
 
 // Testing helper functions
 
-include "../src/Node.php";
+require_once(__DIR__ . "/../src/Node.php");
 
 // string matching
 

@@ -2,7 +2,7 @@
 
 // Testing templates
 
-include "../src/Node.php";
+require_once(__DIR__ . "/../src/Node.php");
 
 $html = new \Summoning\Node('html');
 
